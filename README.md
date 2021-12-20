@@ -1,2 +1,2 @@
-# logPooleR
+# logPoolR
 Logarithmic pooling routines 
