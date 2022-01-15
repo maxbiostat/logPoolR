@@ -1,12 +1,15 @@
 Package: logPoolR
-Title: What the Package Does (One Line, Title Case)
+Title: Logarithmic Pooling of Probability Distributions
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person(given = "Luiz Max",
+           family = "Carvalho",
+           role = c("aut", "cre"),
+           email = "lmax.fgv@gmail.com",
+           comment = c(ORCID = "0000-0001-5736-5578"))
+Depends: R (>= 3.1.0), matrixStats, caTools, compiler, ggplot2, mvtnorm, parallel
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
