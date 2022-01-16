@@ -1,3 +1,13 @@
+#' Elicit hyperparameters of a Beta distribution from mean and variance or 
+#' mean and coefficient of variation
+#'
+#' @param m0 the desired mean, a scalar between 0 and 1.
+#' @param v0 the desired mean, a scalar between 0 and 1.
+#' @param cv the desired coefficient of variation, a scalar larger than 0.
+#'
+#' @return a vector containing the elicited shape parameters.
+#' @export elicit_beta_mean_cv 
+#'
 elicit_beta_mean_cv <- function(m0, v0 = NULL, cv = 1){
   if(!is.null(v0)){
     a <- -(m0*v0 + m0^3 - m0^2)/v0
@@ -6,10 +16,20 @@ elicit_beta_mean_cv <- function(m0, v0 = NULL, cv = 1){
     a <- -(m0*(cv*m0)^2 + m0^3 - m0^2)/(cv*m0)^2
     b <- ((m0-1)*(cv*m0)^2 + m0^3 - 2*m0^2 + m0)/(cv*m0)^2
   }
-  if(a < 0 || b <0) warning("Warning: at least one of the obtained parameters is not valid")
+  if(a < 0 || b <0){
+    warning("Warning: at least one of the obtained parameters is not valid")
+  } 
   return(list(a = a, b = b))
 }
-
+#' Elicit hyperparameters of a Beta distribution from median and upper quantile 
+#'
+#' @param m the desired median, a scalar between 0 and 1.
+#' @param d the distance between \code{m} and the desired upper quantile.
+#' @param q the desired probability level, a scalar between 0 and 1.
+#'
+#' @return a vector containing the elicited shape parameters.
+#' @export elicit_beta_median_iq 
+#'
 elicit_beta_median_iq <- function(m, d, q = .90){
   u <- m + d
   loss <- function(x){

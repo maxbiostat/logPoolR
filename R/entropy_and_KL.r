@@ -1,3 +1,11 @@
+#' Entropy of a Beta distribution
+#'
+#' @param a Shape parameter. Scalar larger than zero.
+#' @param b Shape parameter. Scalar larger than zero.
+#'
+#' @return the entropy, a scalar.
+#' @export entropy_beta
+#'
 entropy_beta <- function(a, b){
   lbeta(a, b) - (a-1)*digamma(a) - (b-1)*digamma(b) + (a+b-2)*digamma(a+b)
 }
@@ -27,10 +35,20 @@ entropy_surface_beta <- function(av, bv, N = 100){
   return(list(M = ME, as = as, bs = bs))
 }
 
+#' Kullback-Leibler divergence a Beta and the pool.
+#'
+#' @param astar shape parameter of the pool \code{pi}.
+#' @param bstar shape parameter of the pool \code{pi}.
+#' @param ai shape parameter of \code{f}.
+#' @param bi shape parameter of \code{f}.
+#' @param type  if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi).
+#' @details  Here pi ~ Beta(astar, bstar) and f ~ Beta(ai, bi).
+#'
+#' @return the KL divergence. A scalar.
+#' @export kl_beta
+#'
 kl_beta <- function(astar, bstar, ai, bi, type = c("pf", "fp")){
-  ## if type = pf, computes KL(pi||f),
-  ## if type = fp, computes KL(f || pi)
-  # where pi ~ Beta(astar, bstar) and f ~ B(ai, bi)
   if(type == "pf"){
     a1 = astar
     b1 = bstar
@@ -62,6 +80,14 @@ optklbeta_inv <- function(alpha.inv, ap, bp, type = "pf"){
   sum(optklbeta(alpha, ap, bp, type))
 }
 
+#' Entropy of a Gamma distribution
+#'
+#' @param a Shape parameter. Scalar larger than zero.
+#' @param b Rate parameter. Scalar larger than zero.
+#'
+#' @return the entropy, a scalar.
+#' @export entropy_gamma
+#'
 entropy_gamma <- function(a, b){
   a - log(b) + log(gamma(a)) + (1-a)*digamma(a)
 }
@@ -79,9 +105,20 @@ entropy_surface_gamma <- function(av, bv, N = 100){
   return(list(M = ME, as = as, bs = bs))
 }
 
+#' Kullback-Leibler divergence a Gamma and the pool.
+#'
+#' @param astar shape parameter of the pool \code{pi}.
+#' @param bstar rate parameter of the pool \code{pi}.
+#' @param ai shape parameter of \code{f}.
+#' @param bi rate parameter of \code{f}.
+#' @param type  if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi).
+#' @details  Here pi ~ Gamma(astar, bstar) and f ~ Gamma(ai, bi)
+#'
+#' @return the KL divergence. A scalar.
+#' @export kl_gamma
+#'
 kl_gamma <- function(astar, bstar, ai, bi, type = c("pf", "fp")){
-  ## KL(f||g), where f~Gamma(a0, b0) and g ~ Gamma(a1, b1)
-  ## KL(a, b0, a1, b1)
   if(type == "pf"){
     a0 = astar
     b0 = bstar
@@ -130,6 +167,21 @@ optentgauss_inv <- function(alpha.inv, mp, vp){
   -optentgauss(alpha, mp, vp)
 }
 
+
+#' Kullback-Leibler divergence a Gamma and the pool.
+#'
+#' @param astar shape parameter of the pool \code{pi}.
+#' @param vstar variance of the pool \code{pi}.
+#' @param ai shape parameter of \code{f}.
+#' @param vi variance parameter of \code{f}.
+#' @param type  if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi).
+#' @details  Here pi ~ Normal(mstar, vstar) and f ~ Normal(mi, vi) and parametrisation
+#' is mean and variance.
+#'
+#' @return the KL divergence. A scalar.
+#' @export kl_gauss
+#'
 kl_gauss <- function(mstar, vstar, mi, vi, type = c("pf", "fp")){
   ## WARNING: parametrisation is MEAN and VARIANCE!
   if(type == "pf"){
@@ -163,8 +215,17 @@ optklgauss_inv <- function(alpha.inv, mp, vp, type = "pf"){
   sum(optklgauss(alpha, mp, vp, type))
 }
 
-entropy_pool <- function(D, alphas){
-  expectlog <- function(x) {-log(x) * dpoolnorm_positive(x, D, alphas)}
+
+#' Compute the entropy of a general pool of distributions
+#'
+#' @param D list containing the density functions.
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#'
+#' @return the entropy, a scalar.
+#' @export entropy_pool
+#'
+entropy_pool <- function(D, alpha){
+  expectlog <- function(x) {-log(x) * dpoolnorm_positive(x, D, alpha)}
   # using dpoolnorm_positive DELIBERATELY introduces a bug
   ent <- stats::integrate(expectlog, 0, Inf)$value
   return(ent)
