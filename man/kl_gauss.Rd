@@ -2,27 +2,27 @@
 % Please edit documentation in R/entropy_and_KL.r
 \name{kl_gauss}
 \alias{kl_gauss}
-\title{Kullback-Leibler divergence a Gamma and the pool.}
+\title{Kullback-Leibler divergence a Gaussian and the pool.}
 \usage{
 kl_gauss(mstar, vstar, mi, vi, type = c("pf", "fp"))
 }
 \arguments{
+\item{mstar}{mean parameter of the pool \code{pi}.}
+
 \item{vstar}{variance of the pool \code{pi}.}
+
+\item{mi}{mean parameter of \code{f}.}
 
 \item{vi}{variance parameter of \code{f}.}
 
 \item{type}{if \code{type = pf}, computes KL(pi||f), whereas
 \code{type = fp}, computes KL(f || pi).}
-
-\item{astar}{shape parameter of the pool \code{pi}.}
-
-\item{ai}{shape parameter of \code{f}.}
 }
 \value{
 the KL divergence. A scalar.
 }
 \description{
-Kullback-Leibler divergence a Gamma and the pool.
+Kullback-Leibler divergence a Gaussian and the pool.
 }
 \details{
 Here pi ~ Normal(mstar, vstar) and f ~ Normal(mi, vi) and parametrisation

@@ -168,11 +168,11 @@ optentgauss_inv <- function(alpha.inv, mp, vp){
 }
 
 
-#' Kullback-Leibler divergence a Gamma and the pool.
+#' Kullback-Leibler divergence a Gaussian and the pool.
 #'
-#' @param astar shape parameter of the pool \code{pi}.
+#' @param mstar mean parameter of the pool \code{pi}.
 #' @param vstar variance of the pool \code{pi}.
-#' @param ai shape parameter of \code{f}.
+#' @param mi mean parameter of \code{f}.
 #' @param vi variance parameter of \code{f}.
 #' @param type  if \code{type = pf}, computes KL(pi||f), whereas 
 #' \code{type = fp}, computes KL(f || pi).
