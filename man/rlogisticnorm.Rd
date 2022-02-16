@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.r
 \name{rlogisticnorm}
 \alias{rlogisticnorm}
-\title{Title}
+\title{Generate samples from a multivariate logistic normal.}
 \usage{
 rlogisticnorm(N, m, Sigma)
 }
@@ -17,5 +17,5 @@ rlogisticnorm(N, m, Sigma)
 
 }
 \description{
-Title
+Generate samples from a multivariate logistic normal.
 }

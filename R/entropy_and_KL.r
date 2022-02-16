@@ -10,15 +10,41 @@ entropy_beta <- function(a, b){
   lbeta(a, b) - (a-1)*digamma(a) - (b-1)*digamma(b) + (a+b-2)*digamma(a+b)
 }
 
+#' Loss function for maximising the entropy of a Beta pool.
+#'
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of shape parameters, all larger than zero.
+#' @return the entropy of the pool, a scalar.
+#' @export optentbeta
+#'
 optentbeta <- function(alpha, ap, bp){
   entropy_beta(a = sum(alpha*ap), b = sum(alpha*bp))
 }
 
+#' Loss function for maximising the entropy of a Beta pool.
+#'
+#' @param alpha.inv vector of weights mapped onto R^(K-1).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of shape parameters, all larger than zero.
+#' @return the negative of the entropy, a scalar.
+#' @export optentbeta_inv
+#'
 optentbeta_inv <- function(alpha.inv, ap, bp){
   alpha <- alpha_01(alpha.inv)
   -optentbeta(alpha, ap, bp)
 }
 
+#' Compute the entropy of Beta distribution on a grid of shape parameters.
+#'
+#' @param av a vector of shape parameters, all greater than zero.
+#' @param bv a vector of shape parameters, all greater than zero.
+#' @param N Number of grid points to compute. 
+#'
+#' @return a list containing a matrix with the entropies computed on a N x N grid, as 
+#' well as vectors containing values of `a` and `b` in the range of `av` and `bv`.
+#' @export entropy_surface_beta
+#'
 entropy_surface_beta <- function(av, bv, N = 100){
   # Since the maximum value for astar is max(av) and
   # the same goes for bstar, we can draw a surface for a given set of a's and b's 
@@ -47,7 +73,7 @@ entropy_surface_beta <- function(av, bv, N = 100){
 #'
 #' @return the KL divergence. A scalar.
 #' @export kl_beta
-#'
+#' 
 kl_beta <- function(astar, bstar, ai, bi, type = c("pf", "fp")){
   if(type == "pf"){
     a1 = astar
@@ -65,6 +91,17 @@ kl_beta <- function(astar, bstar, ai, bi, type = c("pf", "fp")){
   return(res)
 }
 
+#' Loss function for minimising the sum of KL divergences of a Beta pool
+#'
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of shape parameters, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See \code{\link[logPooR]{kl_beta}}.
+#'
+#' @return a vector containing the KL divergences.
+#' @export optklbeta
+#'
 optklbeta <- function(alpha, ap, bp, type){
   K <- length(alpha)
   astar <- sum(alpha*ap)
@@ -75,6 +112,17 @@ optklbeta <- function(alpha, ap, bp, type){
   return(ds)
 }
 
+#' Loss function for maximising the entropy of a Beta pool.
+#'
+#' @param alpha.inv vector of weights mapped onto R^(K-1).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of shape parameters, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See \code{\link[logPooR]{kl_beta}}.
+#'
+#' @return the sum of KL divergences, a scalar.
+#' @export optklbeta_inv
+#'
 optklbeta_inv <- function(alpha.inv, ap, bp, type = "pf"){
   alpha <- alpha_01(alpha.inv)
   sum(optklbeta(alpha, ap, bp, type))
@@ -135,6 +183,17 @@ kl_gamma <- function(astar, bstar, ai, bi, type = c("pf", "fp")){
   return(ans)
 }
 
+#' Loss function for minimising the sum of KL divergences of a Gamma pool.
+#'
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of rate parameters, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See  \code{\link[logPooR]{kl_gamma}}.
+#'
+#' @return a vector containing the KL divergences.
+#' @export optklgamma
+#'
 optklgamma <- function(alpha, ap, bp, type){
   K <- length(alpha)
   astar <- sum(alpha*ap)
@@ -145,6 +204,17 @@ optklgamma <- function(alpha, ap, bp, type){
   return(ds)
 }
 
+#' Loss function for minimising the sum of KL divergences of a Gamma pool.
+#'
+#' @param alpha.inv vector of weights mapped onto R^(K-1).
+#' @param ap vector of shape parameters, all larger than zero.
+#' @param bp vector of rate parameters, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See  \code{\link[logPooR]{kl_gamma}}.
+#'
+#' @return the sum of KL divergences, a scalar.
+#' @export optklgamma_inv
+#'
 optklgamma_inv <- function(alpha.inv, ap, bp, type = "pf"){
   alpha <- alpha_01(alpha.inv)
   sum(optklgamma(alpha, ap, bp, type))
@@ -153,20 +223,36 @@ optklgamma_inv <- function(alpha.inv, ap, bp, type = "pf"){
 entropy_gauss <- function(m, v){
   .5*log(2*pi*exp(1)*v)
 }
-### WARNING: there's no need to optimise the entropy, as there is a "closed-form" solution, namely
-### picking the distribution with  the largest variance, but we'll indulge for the sake of completeness.
+
+#' Loss function for maximising the entropy of a Gaussian pool.
+#'
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#' @param mp vector of means.
+#' @param vp vector of variances, all larger than zero.
+#' @return the entropy of the pool, a scalar.
+#' @export optentgauss
+#'
 optentgauss <- function(alpha, mp, vp){
+  ### WARNING: there's no need to optimise the entropy, as there is a "closed-form" solution, namely
+  ### picking the distribution with  the largest variance, but we'll indulge for the sake of completeness.
   ws <- alpha/vp
   mstar <- sum(ws*mp)/sum(ws)
   vstar <-  1/sum(ws)
   entropy_gauss(m = mstar, v = vstar)
 }
 
+#' Loss function for maximising the entropy of a Gaussian pool.
+#'
+#' @param alpha.inv vector of weights mapped onto R^(K-1).
+#' @param mp vector of means.
+#' @param vp vector of variances, all larger than zero.
+#' @return the entropy of the pool, a scalar.
+#' @export optentgauss_inv
+#'
 optentgauss_inv <- function(alpha.inv, mp, vp){
   alpha <- alpha_01(alpha.inv)
   -optentgauss(alpha, mp, vp)
 }
-
 
 #' Kullback-Leibler divergence a Gaussian and the pool.
 #'
@@ -199,6 +285,17 @@ kl_gauss <- function(mstar, vstar, mi, vi, type = c("pf", "fp")){
   return(ans)
 }
 
+#' Loss function for minimising the sum of KL divergences of a Gaussian pool.
+#'
+#' @param alpha vector of weights, which must lie in a simplex (can be a scalar).
+#' @param mp vector of means.
+#' @param vp vector of variances, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See  \code{\link[logPooR]{kl_gauss}}.
+#'
+#' @return a vector containing the KL divergences.
+#' @export optklgauss
+#'
 optklgauss <- function(alpha, mp, vp, type){
   K <- length(alpha)
   ws <- alpha/vp
@@ -210,11 +307,21 @@ optklgauss <- function(alpha, mp, vp, type){
   return(ds)
 }
 
+#' Loss function for minimising the sum of KL divergences of a Gaussian pool.
+#'
+#' @param alpha.inv vector of weights mapped onto R^(K-1).
+#' @param mp vector of means.
+#' @param vp vector of variances, all larger than zero.
+#' @param type if \code{type = pf}, computes KL(pi||f), whereas 
+#' \code{type = fp}, computes KL(f || pi). See  \code{\link[logPooR]{kl_gauss}}.
+#'
+#' @return a vector containing the KL divergences.
+#' @export optklgauss_inv
+#'
 optklgauss_inv <- function(alpha.inv, mp, vp, type = "pf"){
   alpha <- alpha_01(alpha.inv)
   sum(optklgauss(alpha, mp, vp, type))
 }
-
 
 #' Compute the entropy of a general pool of distributions
 #'

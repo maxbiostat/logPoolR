@@ -65,14 +65,14 @@ constructSigma <- function(X){
   return(Sigma)
 }
 
-#' Title
+#' Generate samples from a multivariate logistic normal.
 #'
 #' @param N  number of draws.
 #' @param m is a vector of means. If a scalar is given, it is recycled \code{K} times.
 #' @param Sigma the variance-covariance matrix.
 #'
 #' @return
-#' @export
+#' @export rlogisticnorm
 #'
 rlogisticnorm <- function(N, m, Sigma){
   raw.draws <-  mvtnorm::rmvnorm(n = N, mean = m, sigma = Sigma)

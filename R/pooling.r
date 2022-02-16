@@ -22,7 +22,7 @@ pool_par <- function(alpha, a, b){
 #' @param v vector of *variances*. 
 #'
 #' @return pooled mean and *STANDARD DEVIATION*.
-#' @export
+#' @export pool_par_gauss
 #'
 pool_par_gauss <- function(alpha, m, v){
   ws <- alpha/v
