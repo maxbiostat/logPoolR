@@ -13,9 +13,6 @@ rlogisticnorm(N, m, Sigma)
 
 \item{Sigma}{the variance-covariance matrix.}
 }
-\value{
-
-}
 \description{
 Generate samples from a multivariate logistic normal.
 }
