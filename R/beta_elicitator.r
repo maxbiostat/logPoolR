@@ -81,3 +81,26 @@ elicit_beta_quantiles <- function(l, u, alpha = .95) {
   }
   return(list(a = a, b = b))
 }
+
+#' Elicit hyperparameters of a maximum-entropy Beta distribution with a given mean
+#'
+#' @param m0 target mean
+#'
+#' @return a vector containing the elicited shape parameters.
+#' @export elicit_beta_mean_maxent
+#'
+elicit_beta_mean_maxent <- function(m0) {
+  eta <- (1/m0 - 1)
+  Q <- function(a){
+    b <- a * eta
+    out <- entropy_beta(a, b)
+    return(-out)
+  }
+  Opt <- optimize(Q, lower = 0, upper = 1E4)
+  a <- Opt$minimum
+  b <- a * eta
+  if (a < 0 || b < 0) {
+    warning("Warning: at least one of the obtained parameters is not valid")
+  }
+  return(list(a = a, b = b))
+}
